@@ -11,6 +11,7 @@ print("Playscreen module loaded")
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
 
+
 local timerText = stimer.init({
 	fontSize = 40,
 	font = "Helvetica",
@@ -18,16 +19,21 @@ local timerText = stimer.init({
 	y = centerY - 100,
 })
 
+timerText.alpha = 0
+
 local scoreText = score.init({
 	fontSize = 32,
 	font = "Helvetica",
-	x = centerX,
+	x = 430,
 	y = centerY + 140,
 	maxDigits = 3,
 	leadingZeros = false,
 	filename = "score.txt"
 })
+scoreText:setFillColor(0, 0, 0)
 
+
+local high_score = score.load()
 -- Forward references
 local onTap
 local edge = 0
@@ -54,7 +60,11 @@ local ready = false
 
 local function time_up_listener( event )
 	print("Time up event received!")
-	-- score.save()
+	local current_score = score.get()
+	if ( current_score > high_score) then
+		print("Saving new high score")
+		score.save()
+	end
 	storyboard.gotoScene("replay")
 end
 
@@ -63,6 +73,13 @@ function scene:createScene( event )
 	local onion = display.newImage("chop.jpg", centerX, centerY)
 	local prev_scene = storyboard.getPrevious()
 	
+	
+	print("Highscore: ", high_score)
+
+	local highscoreText = display.newText("Highscore: "..high_score, 70, centerY - 140, "Helvetica", 22)
+	highscoreText:setFillColor(0, 0, 0)
+
+
 	if (prev_scene == "replay") then
 		storyboard.removeScene("replay")
 	end
@@ -77,6 +94,7 @@ function scene:createScene( event )
 			remaining = remaining - 1
 			countDownText.text = remaining
 			if (remaining == 0) then
+				transition.to(timerText, {alpha=1})
 				ready = true
 				running = true
 				transition.to(starttext, {alpha=0})
@@ -91,8 +109,9 @@ function scene:createScene( event )
 	Runtime:addEventListener("timeup", time_up_listener)
 
 	group:insert( onion )
+	group:insert( highscoreText )
 	group:insert( scoreText )
-	group:insert( timerText )
+	-- group:insert( timerText )
 
 end
 
@@ -112,9 +131,9 @@ function scene:willEnterScene( event )
 	score.set(0)
 	edge = 0
 	running = false
-	starttext = display.newText("Ready, steady, chop!", centerX, centerY + 100, "Helvetica", 24)
-	starttext:setTextColor(1, 1, 1)
-	group:insert( starttext )
+	-- starttext = display.newText("Ready, steady, chop!", centerX, centerY + 100, "Helvetica", 24)
+	-- starttext:setTextColor(1, 1, 1)
+	-- group:insert( starttext )
 
 end
 
