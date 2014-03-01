@@ -22,7 +22,7 @@ function M.init( options )
 
 	M.format = "%" .. prefix .. opt.maxDigits .. "d"
 
-	M.scoreText = display.newText( string.format(M.format, 0), opt.x, opt.y, opt.font, opt.fontSize)
+	M.scoreText = display.newText( string.format(M.format, M.score), opt.x, opt.y, opt.font, opt.fontSize)
 	return M.scoreText
 end
 
@@ -48,7 +48,7 @@ function M.save()
 	if ( file ) then
 		local contents = tostring( M.score )
 		file:write( contents )
-		io:close( file )
+		io.close( file )
 		return true
 	else
 		print ("Error: could not read ", M.filename, '.')
